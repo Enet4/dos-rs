@@ -4,13 +4,11 @@
 name = "dos-rs"
 version = "0.1.0"
 dependencies = [
- "libc 0.2.69 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libc",
 ]
 
 [[package]]
 name = "libc"
-version = "0.2.69"
+version = "0.2.79"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[metadata]
-"checksum libc 0.2.69 (registry+https://github.com/rust-lang/crates.io-index)" = "99e85c08494b21a9054e7fe1374a732aeadaff3980b6990b94bfd3a70f690005"
+checksum = "2448f6066e80e3bfc792e9c98bf705b4b0fc6e8ef5b43e5889aff0eaa9c58743"

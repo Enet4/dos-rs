@@ -9,42 +9,41 @@
   "eliminate-frame-pointer": false,
   "emit-debug-gdb-scripts": false,
   "env": "djgpp",
-  "exe-suffix": ".exe",
+  "exe-suffix": ".EXE",
   "executables": true,
   "function-sections": false,
   "late-link-args": {
     "gcc": [
-      "-Wl,--end-group"
+      "--end-group"
     ]
   },
-  "linker": "i686-pc-msdosdjgpp-gcc",
+  "linker": "i686-pc-msdosdjgpp-ld",
   "ar": "i686-pc-msdosdjgpp-ar",
-  "linker-flavor": "gcc",
+  "linker-flavor": "ld",
   "llvm-target": "i686-pc-windows-gnu",
   "position-independent-executables": false,
   "disable-redzone": true,
   "os": "msdos",
-  "post-link-objects": [
-  ],
+  "eh-frame-header": false,
+  "crt-static-default": true,
   "pre-link-args": {
     "gcc": [
-      "-m32",
-      "-march=i386",
+      "--verbose",
       "-fno-pie",
       "-fno-use-linker-plugin",
-      "-Wl,--as-needed",
-      "-Wl,--gc-sections",
-      "-Wl,--start-group"
+      "--as-needed",
+      "--gc-sections",
+      "--start-group"
     ]
   },
   "pre-link-objects-exe": [
-    "/usr/i686-pc-msdosdjgpp/lib/libc.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libemu.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libg.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libm.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libpc.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libssp.a",
-    "/usr/i686-pc-msdosdjgpp/lib/libquadmath.a"
+    "libc.a",
+    "libemu.a",
+    "libg.a",
+    "libm.a",
+    "libpc.a",
+    "libssp.a",
+    "libquadmath.a"
   ],
   "requires-uwtable": true,
   "staticlib-prefix": "",
