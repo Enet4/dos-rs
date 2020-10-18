@@ -9,7 +9,7 @@
   "eliminate-frame-pointer": false,
   "emit-debug-gdb-scripts": false,
   "env": "djgpp",
-  "exe-suffix": ".EXE",
+  "exe-suffix": ".exe",
   "executables": true,
   "function-sections": false,
   "late-link-args": {
