@@ -1,2 +1,2 @@
 [build]
-target = "i386-pc-msdos-djgpp"
+target = "i386-unknown-none-gnu"

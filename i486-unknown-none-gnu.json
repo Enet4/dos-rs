@@ -1,0 +1,23 @@
+{
+    "arch": "x86",
+    "cpu": "i386",
+    "data-layout": "e-m:e-p:32:32-f64:32:64-f80:32-n8:16:32-S128",
+    "disable-redzone": true,
+    "dynamic-linking": false,
+    "executables": false,
+    "features": "",
+    "linker-flavor": "gcc",
+    "linker-is-gnu": true,
+    "llvm-target": "i486-unknown-none-gnu",
+    "max-atomic-width": 32,
+    "no-default-libraries": true,
+    "os": "none",
+    "panic-strategy": "abort",
+    "position-independent-executables": false,
+    "relocation-model": "static",
+    "relro-level": "full",
+    "target-c-int-width": "32",
+    "target-endian": "little",
+    "target-pointer-width": "32",
+    "vendor": "unknown"
+}
