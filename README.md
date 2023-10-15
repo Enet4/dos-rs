@@ -3,7 +3,7 @@
 
 This is an attempt at building a Rust project to target
 MS-DOS in protected mode via [DJGPP](http://www.delorie.com/djgpp/),
-supporting x86 CPUS from i386 to i686.
+supporting x86 CPUs architectures from i386 to i686.
 
 To engage in the discussion to reach this goal, please check out [this GitHub issue](https://github.com/Serentty/rusty-dos/issues/3) and [this thread](https://groups.google.com/forum/#!msg/comp.os.msdos.djgpp/0l6wjO-oSM0/wucHtHpCAgAJ).
 After many different attempts,
@@ -13,6 +13,19 @@ the conversion of ELF .o objects into DJGPP COFF32 objects.
 This project also contains a few preliminary modules that grant easier
 access to DOS-specific capabilities, namely port I/O, calling interrupts,
 and VGA graphics.
+
+## Status
+
+While there are not many stability and performance guarantees at the moment,
+the proofs of concept written so far appear to work as inteded.
+There is also no `std` support,
+but it should be possible to write an allocator for `alloc` support.
+
+The development experience is also not as fluid as it could be.
+The Rust program exports a C main function,
+so it exists as a static C library.
+The compiled objects need to be converted
+before they are linked together using `i686-pc-msdosdjgpp-gcc`.
 
 ## Requirements
 
@@ -29,11 +42,13 @@ and VGA graphics.
 ./build.sh release
 ```
 
-Some variables in the script can be tweaked beforehand.
+Some variables in the script can be tuned to your liking.
 
 ## Running
 
-Copy the resulting `dos_rs.exe` file
+Copy the resulting `dos_rs.exe` file into your DOS environment,
+with [`CWSDPMI.EXE`](http://sandmann.dotster.com/cwsdpmi/) alongside it.
+It should then be ready run for a DOS machine, virtual machine, or emulator.
 
 ## Related
 
