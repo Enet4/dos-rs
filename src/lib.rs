@@ -30,7 +30,7 @@ pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
     unsafe {
         puts(b"Rust says hello DOS!\nPress Enter to continue\0".as_ptr() as *const c_char);
 
-        wait_for_keypress(0);
+        busy_wait(100_000);
         wait_for_keypress(0x1c);
 
         dos_x::vga::set_video_mode_13h();
@@ -44,8 +44,8 @@ pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
         ferris::ferris_color_palette().set();
 
         dos_x::vga::draw_buffer(ferris);
-        
-        wait_for_keypress(0);
+
+        busy_wait(100_000);
         wait_for_keypress(0x1c);
 
         // set back to text mode
@@ -62,6 +62,17 @@ pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
     }
 
     0
+}
+
+/// wait a number of cycles
+/// (use several thousands of cycles for a visible delay)
+fn busy_wait(cycles: usize) {
+    let mut dummy: u32 = 0;
+    for i in 0..cycles {
+        unsafe {
+            core::ptr::write_volatile(core::hint::black_box(&mut dummy), i as u32);
+        }
+    }
 }
 
 #[panic_handler]
