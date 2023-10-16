@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        cache: true
+      # cache elf2djgpp
+    - name: Cache elf2djgpp
+      id: cache-elf2djgpp
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/elf2djgpp
+          ~/.cargo/bin/elf2djgpp-rev.txt
+        key: ${{ runner.os }}-elf2djgpp
+    - name: Build and install elf2djgpp
+      run: sh ./install_elf2djgpp.sh
+    - uses: actions/checkout@v3
+    - name: Build
+      run: ./build.sh
