@@ -1,2 +1,5 @@
 [build]
 target = "i386-unknown-none-gnu"
+
+[unstable]
+build-std = ["core", "alloc"]

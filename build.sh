@@ -15,7 +15,7 @@ if [ "$target" = "release" ]; then
     RUST_XFLAGS="--release"
 fi
 
-cargo build $RUST_XFLAGS -Zbuild-std=core --target $ARCH-unknown-none-gnu.json
+cargo build $RUST_XFLAGS --target $ARCH-unknown-none-gnu.json
 
 # Extract the object files from the ELF static library
 mkdir -p build/$target/djgpp-lib
