@@ -26,8 +26,8 @@ jobs:
           ~/.cargo/bin/elf2djgpp
           ~/.cargo/bin/elf2djgpp-rev.txt
         key: ${{ runner.os }}-elf2djgpp
-    - name: Build and install elf2djgpp
-      run: bash ./install_elf2djgpp.sh
     - uses: actions/checkout@v3
+    - name: Build and install elf2djgpp
+      run: bash install_elf2djgpp.sh
     - name: Build
       run: ./build.sh
