@@ -2,8 +2,11 @@
 //! 
 //! 
 #![feature(start)]
+#![feature(allocator_api)]
 #![no_std]
 #![no_main]
+extern crate alloc;
+use alloc::vec::Vec;
 use core::panic::PanicInfo;
 
 use dos_x::key::wait_for_keypress;
@@ -38,12 +41,12 @@ pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
         // draw Ferris:
 
         // 1. grab pixel data
-        let ferris = ferris::ferris_pixel_data();
+        let ferris = Vec::from(ferris::ferris_pixel_data());
 
         // 2. set up color palette
         ferris::ferris_color_palette().set();
 
-        dos_x::vga::draw_buffer(ferris);
+        dos_x::vga::draw_buffer(&ferris);
 
         busy_wait(100_000);
         wait_for_keypress(0x1c);
