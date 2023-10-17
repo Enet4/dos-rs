@@ -36,9 +36,11 @@ jobs:
         key: ${{ runner.os }}-i586-djgpp-gcc1220
     - uses: actions/checkout@v3
     - name: Download and install djgpp-gcc
+      if: steps.cache-djgpp-gcc.outputs.cache-hit != 'true'
       run: bash install_djgpp-gcc.sh
     - name: Build and install elf2djgpp
-      run: bash install_elf2djgpp.sh && echo /opt/djgpp/bin >> $GITHUB_PATH
+      run: bash install_elf2djgpp.sh
+    - run: echo /opt/djgpp/bin >> $GITHUB_PATH
     - name: Build
       env:
         # binaries of msdosdjgpp-gcc are for i586
