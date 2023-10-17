@@ -14,7 +14,7 @@ if [ -f "~/.cargo/bin/elf2dgjpp" ]; then
         exit 0
     fi
 fi
-cargo install --path .
+cargo +stable install --path . --target x86_64-unknown-linux-gnu
 git rev-parse HEAD > ~/.cargo/bin/elf2dgjpp-rev.txt
 cd ..
 # clean up
