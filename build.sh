@@ -2,6 +2,7 @@
 set -eu
 
 CC=${CC:-i686-pc-msdosdjgpp-gcc}
+AR=${AR:-ar}
 ARCH=${ARCH:-i386}
 elf2djgpp=elf2djgpp
 target=debug
@@ -21,7 +22,7 @@ cargo build $RUST_XFLAGS --target $ARCH-unknown-none-gnu.json
 mkdir -p build/$target/djgpp-lib
 cd build/$target/djgpp-lib
 rm -f *.o
-llvm-ar x ../../../target/$ARCH-unknown-none-gnu/"$target"/libdos_rs.a
+${AR} x ../../../target/$ARCH-unknown-none-gnu/"$target"/libdos_rs.a
 
 echo "Converting ELF objects to COFF-GO32..."
 for f in *.o; do
@@ -31,7 +32,7 @@ for f in *.o; do
 done
 # clean up the previous one
 rm -f ../libdos_rs.a
-llvm-ar cr ../libdos_rs.a *.o
+${AR} cr ../libdos_rs.a *.o
 
 echo "libdos_rs.a built"
 echo "Building executable..."
