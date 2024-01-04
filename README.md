@@ -48,7 +48,7 @@ Some variables in the script can be tuned to your liking.
 
 Copy the resulting `dos_rs.exe` file into your DOS environment,
 with [`CWSDPMI.EXE`](http://sandmann.dotster.com/cwsdpmi/) alongside it.
-It should then be ready run for a DOS machine, virtual machine, or emulator.
+It should then be ready to run on a DOS machine, virtual machine, or emulator.
 
 ## Related
 
