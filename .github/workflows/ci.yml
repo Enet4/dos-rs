@@ -1,0 +1,61 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  
+env:
+  CARGO_TERM_COLOR: always
+  ARCH: i586
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Cache elf2djgpp
+      id: cache-elf2djgpp
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo/bin/elf2djgpp
+        key: ${{ runner.os }}-elf2djgpp
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        cache: true
+        rustflags: "-W warnings"
+    - name: Install pc-msdosdjgpp-gcc
+      env:
+        MSDOSDJGPP_URL: https://github.com/andrewwutw/build-djgpp/releases/download/v3.4/djgpp-linux64-gcc1220.tar.bz2
+      run: |
+        mkdir -p /tmp/downloads
+        # download .tar.bz2, extract, and copy to /usr/local/
+        curl -L $MSDOSDJGPP_URL | tar -xj -C /tmp/downloads/
+        sudo cp -r /tmp/downloads/djgpp/* /usr/local/
+        # add to PATH
+        echo "export PATH=/usr/local/${{ env.ARCH }}-pc-msdosdjgpp/bin:$PATH" >> $GITHUB_ENV
+        # clean up
+        rm -rf /tmp/downloads
+        # test
+        "${{ env.ARCH }}-pc-msdosdjgpp-gcc" --version
+    - name: Install elf2djgpp
+      if: steps.cache-elf2djgpp.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p /tmp/elf2djgpp
+        cd /tmp/elf2djgpp
+        git clone --depth 1 https://github.com/cknave/elf2djgpp.git
+        cd elf2djgpp
+        rustup default stable
+        cargo install --path .
+        # clean up
+        rm -rf elf2djgpp
+        # test
+        elf2djgpp --version
+    - name: Build
+      env:
+        CC: ${{ env.ARCH }}-pc-msdosdjgpp-gcc
+      run: ./build.sh
