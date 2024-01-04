@@ -65,6 +65,23 @@ pub unsafe fn draw_buffer(data: &[u8]) {
     _dosmemputw(data.as_ptr(), data.len() / 2, VGA_BUFFER_ADDR);
 }
 
+/// synchronize the program with the vertical retrace
+pub unsafe fn vsync() {
+    // wait until any previous retrace has ended
+    loop {
+        if (inportb(0x3DA) & 8) != 0 {
+            break;
+        }
+    }
+ 
+    /* wait until a new retrace has just begun */
+    loop {
+        if (inportb(0x3DA) & 8) == 0 {
+            break;
+        }
+    }
+}
+
 /// A thin abstraction over the VGA color palette.
 /// The array within contains the 256 colors in RGB,
 /// in standard layout (RGBRGBRGB...),

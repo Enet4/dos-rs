@@ -7,9 +7,10 @@
 #![no_main]
 extern crate alloc;
 use alloc::vec::Vec;
+use djgpp::{stdio::puts, stdlib::exit};
 use core::panic::PanicInfo;
 
-use dos_x::key::wait_for_keypress;
+use dos_x::{key::wait_for_keypress, vga::vsync};
 
 mod djgpp;
 mod dos_x;
@@ -19,13 +20,6 @@ mod ferris;
 type c_int = i32;
 #[allow(non_camel_case_types)]
 type c_char = i8;
-
-// libc functions implemented by DJGPP
-extern "C" {
-    pub fn printf(format: *const c_char, ...) -> c_int;
-    pub fn puts(s: *const c_char) -> c_int;
-    pub fn exit(c: c_int);
-}
 
 #[start]
 #[no_mangle]
@@ -43,9 +37,14 @@ pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
         // 1. grab pixel data
         let ferris = Vec::from(ferris::ferris_pixel_data());
 
-        // 2. set up color palette
-        ferris::ferris_color_palette().set();
+        // 2. grab color palette
+        let palette = ferris::ferris_color_palette();
 
+        vsync();
+
+        // apply the palette
+        palette.set();
+        // put the pixel data
         dos_x::vga::draw_buffer(&ferris);
 
         busy_wait(100_000);
