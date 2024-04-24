@@ -1,6 +1,6 @@
 //! Simple keyboard input module.
 
-use crate::djgpp::{pc::inportb, dpmi::__dpmi_yield};
+use djgpp::{pc::inportb, dpmi::__dpmi_yield};
 
 pub fn wait_for_keypress(code: u8) {
     let mut c: u8 = 0;

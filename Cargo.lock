@@ -3,5 +3,19 @@
 version = 3
 
 [[package]]
-name = "dos-rs"
+name = "djgpp"
 version = "0.1.0"
+
+[[package]]
+name = "dos_x"
+version = "0.1.0"
+dependencies = [
+ "djgpp",
+]
+
+[[package]]
+name = "ferris"
+version = "0.1.0"
+dependencies = [
+ "dos_x",
+]

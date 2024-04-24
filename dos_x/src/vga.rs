@@ -1,11 +1,12 @@
 //! A simple module for video mode and VGA graphics in DOS.
 
-use crate::djgpp::dpmi::{__dpmi_regs, __dpmi_int};
-use crate::djgpp::pc::{inportb, outportb};
-use crate::djgpp::go32::{_dosmemputb, _dosmemputw};
+use djgpp::dpmi::{__dpmi_regs, __dpmi_int};
+use djgpp::pc::{inportb, outportb};
+use djgpp::go32::{_dosmemputb, _dosmemputw};
 
 const VGA_BUFFER_ADDR: u32 = 0xa0000;
-const VGA_BUFFER_POINTER: *mut u8 = VGA_BUFFER_ADDR as *mut u8;
+/// A convenience pointer to the start of the VGA buffer
+pub const VGA_BUFFER_POINTER: *mut u8 = VGA_BUFFER_ADDR as *mut u8;
 
 /// Set the video mode.
 ///
@@ -65,7 +66,7 @@ pub unsafe fn draw_buffer(data: &[u8]) {
     _dosmemputw(data.as_ptr(), data.len() / 2, VGA_BUFFER_ADDR);
 }
 
-/// synchronize the program with the vertical retrace
+/// Synchronize the program with the vertical retrace
 pub unsafe fn vsync() {
     // wait until any previous retrace has ended
     loop {

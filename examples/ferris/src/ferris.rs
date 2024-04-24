@@ -1,4 +1,4 @@
-use crate::dos_x::vga::Palette;
+use dos_x::vga::Palette;
 
 static FERRIS_TIF_DATA: &[u8] = include_bytes!("../assets/ferris.tif");
 

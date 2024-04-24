@@ -1,0 +1,12 @@
+[package]
+name = "ferris"
+publish = false
+description = "An example of a DOS program written in Rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+dos_x = { version = "0.1.0", path = "../../dos_x" }

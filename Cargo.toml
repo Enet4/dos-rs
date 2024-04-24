@@ -1,14 +1,15 @@
-[package]
-name = "dos-rs"
-version = "0.1.0"
-authors = ["Eduardo Pinho <enet4mikeenet@gmail.com>"]
-edition = "2021"
+[workspace]
+members = [
+    "djgpp",
+    "dos_x",
+    "examples/ferris"
+]
 
-[lib]
-crate-type = ["staticlib"]
+resolver = "2"
 
 [profile.dev]
 opt-level = 1
 
 [profile.release]
+codegen-units = 1
 strip = "debuginfo"
