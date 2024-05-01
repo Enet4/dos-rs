@@ -38,13 +38,14 @@ rm -f "../$LIBNAME"
 ${AR} cr "../$LIBNAME" *.o
 
 echo "$LIBNAME built"
-echo "Building executable..."
 
 C_XFLAGS="-march=${ARCH}"
 
 if [ "$target" = "release" ]; then
-    C_XFLAGS="$C_XFLAGS -O2"
+    echo "Building release executable..."
+    C_XFLAGS="$C_XFLAGS -O2 -s"
 else
+    echo "Building debug executable..."
     C_XFLAGS="$C_XFLAGS -O0 -g"
 fi
 

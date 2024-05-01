@@ -13,3 +13,5 @@ opt-level = 1
 [profile.release]
 codegen-units = 1
 strip = "debuginfo"
+panic = "abort"
+lto = "fat"
