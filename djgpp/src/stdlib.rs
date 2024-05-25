@@ -16,5 +16,7 @@ extern "C" {
     pub fn calloc(nmemb: usize, size: usize) -> *mut u8;
     pub fn free(ptr: *mut u8);
 
+    pub fn getenv(_name: *const c_char) -> *const c_char;
+
     pub fn exit(c: c_int);
 }

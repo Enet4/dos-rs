@@ -48,14 +48,31 @@
 pub mod alloc;
 pub mod vga;
 pub mod key;
+pub mod adlib;
+pub mod sb;
 
 // re-export
 pub use djgpp;
 use djgpp::stdlib::{c_int, c_char};
 
+static mut ARGV: &'static [*const c_char] = &[];
+
+pub fn argv() -> &'static [*const c_char] {
+    unsafe {
+        ARGV
+    }
+}
+
+// This is the entry point for the DOS program via DJGPP
 #[start]
 #[no_mangle]
-pub extern "C" fn main(_argc: c_int, _argv: *const *const c_char) -> c_int {
+pub extern "C" fn main(argc: c_int, argv: *const *const c_char) -> c_int {
+
+    // initialive arguments
+    unsafe {
+        ARGV = core::slice::from_raw_parts(argv as *const _, argc as usize);
+    }
+
     extern "Rust" {
         fn dos_main();
     }
