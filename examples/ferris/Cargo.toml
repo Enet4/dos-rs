@@ -10,3 +10,4 @@ crate-type = ["staticlib"]
 
 [dependencies]
 dos_x = { version = "0.1.0", path = "../../dos_x" }
+libm = "0.2.8"

@@ -2,11 +2,11 @@
 
 use djgpp::dpmi::{__dpmi_regs, __dpmi_int};
 use djgpp::pc::{inportb, outportb};
-use djgpp::go32::{_dosmemputb, _dosmemputw};
+use djgpp::go32::_dosmemputw;
+use djgpp::sys::farptr::_farpokeb;
 
-const VGA_BUFFER_ADDR: u32 = 0xa0000;
-/// A convenience pointer to the start of the VGA buffer
-pub const VGA_BUFFER_POINTER: *mut u8 = VGA_BUFFER_ADDR as *mut u8;
+/// The numerical address to the VGA buffer
+pub(crate) const VGA_BUFFER_ADDR: u32 = 0xa0000;
 
 /// Set the video mode.
 ///
@@ -42,6 +42,7 @@ pub fn set_video_mode_13h() {
 /// 
 /// This function does not check whether the video mode is set correctly.
 /// A video buffer of size 64_000 bytes is assumed.
+#[inline]
 pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
     if y >= 200 || x >= 320 {
         return;
@@ -49,7 +50,7 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 
     let i = x + y * 320;
 
-    _dosmemputb(&c, 1, VGA_BUFFER_ADDR + i);
+    _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i, c);
 }
 
 /// Draw the entirety of the given data buffer to the video buffer.
@@ -57,6 +58,7 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 /// ### Safety
 /// 
 /// This function does not check whether the video mode is set correctly.
+#[inline]
 pub unsafe fn draw_buffer(data: &[u8]) {
     let data = if data.len() > 320 * 200 {
         &data[..320 * 200]
@@ -67,6 +69,7 @@ pub unsafe fn draw_buffer(data: &[u8]) {
 }
 
 /// Synchronize the program with the vertical retrace
+#[inline]
 pub unsafe fn vsync() {
     // wait until any previous retrace has ended
     loop {
@@ -74,7 +77,7 @@ pub unsafe fn vsync() {
             break;
         }
     }
- 
+
     /* wait until a new retrace has just begun */
     loop {
         if (inportb(0x3DA) & 8) == 0 {

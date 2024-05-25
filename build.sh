@@ -16,7 +16,10 @@ if [ "$target" = "release" ]; then
     RUST_XFLAGS="--release"
 fi
 
-cargo build $RUST_XFLAGS --target $ARCH-unknown-none-gnu.json
+RUST_TARGET="$ARCH-unknown-none-gnu"
+echo "Target: $RUST_TARGET"
+
+cargo build $RUST_XFLAGS --target ./$RUST_TARGET.json
 
 APPNAME="ferris"
 LIBNAME="lib$APPNAME.a"

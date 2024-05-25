@@ -36,6 +36,14 @@ so it exists as a static C library.
 The compiled objects need to be converted
 before they are linked together using `i686-pc-msdosdjgpp-gcc`.
 
+Known caveats:
+
+- Be aware of soundness issues in the compilation of floating point arithmetic
+  against targets without SSE2.
+  <https://github.com/rust-lang/rust/issues/114479>
+  The use of `f32` or `f64` may be unreliable,
+  so test carefully.
+
 ## Requirements
 
 - Build and install [`elf2dgpp`](https://github.com/cknave/elf2djgpp)

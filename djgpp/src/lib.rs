@@ -35,8 +35,11 @@
 //! [DJGPP]: https://www.delorie.com/djgpp/
 #![no_std]
 pub mod dpmi;
+pub mod dos;
 pub mod go32;
 pub mod pc;
 pub mod malloc;
 pub mod stdio;
 pub mod stdlib;
+
+pub mod sys;
