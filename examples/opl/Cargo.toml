@@ -10,3 +10,8 @@ crate-type = ["staticlib"]
 
 [dependencies]
 dos_x = { version = "0.1.0", path = "../../dos_x" }
+
+[dependencies.opbinary]
+git = "https://github.com/Enet4/opbinary-rs"
+branch = "main"
+default-features = false
