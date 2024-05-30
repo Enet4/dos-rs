@@ -167,18 +167,6 @@ fn run_player(filename: &CStr) {
         }
     });
 
-    println!("{} bytes fetched successfully", file_data.len());
-    let mut stop = false;
-    while !stop {
-        unsafe {
-            delay(100);
-        }
-
-        if dos_x::key::get_keypress() == 0x1c {
-            stop = true;
-        }
-    }
-
     let vgm = match opbinary::vgm::Vgm::from_bytes(&file_data) {
         Ok(vgm) => {
             println!(
@@ -243,27 +231,24 @@ fn run_player(filename: &CStr) {
             },
             OplCommand::Wait { samples } => unsafe {
                 delay(samples_to_ms(samples as u32));
-                if get_keypress() == 27 {
+                if get_keypress() == 1 {
                     break;
                 }
             },
             OplCommand::SmallWait { n } => unsafe {
                 delay(samples_to_ms(n as u32 + 1));
-                if get_keypress() == 27 {
+                if get_keypress() == 1 {
                     break;
                 }
             },
             OplCommand::Wait735 => unsafe {
                 delay(samples_to_ms(735));
-                if get_keypress() == 27 {
+                if get_keypress() == 1 {
                     break;
                 }
             },
             OplCommand::Wait882 => unsafe {
                 delay(samples_to_ms(882));
-                if get_keypress() == 27 {
-                    break;
-                }
             },
         }
     }
