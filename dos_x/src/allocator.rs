@@ -1,8 +1,6 @@
-//! Allocator
+//! An allocator which works on DOS.
 
 use core::alloc::{GlobalAlloc, Layout};
-
-use crate::djgpp;
 
 #[derive(Debug)]
 struct AllocatorImpl;
@@ -14,7 +12,7 @@ unsafe impl GlobalAlloc for AllocatorImpl {
         djgpp::stdlib::calloc(layout.size(), layout.align())
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
         djgpp::stdlib::free(ptr)
     }
 }

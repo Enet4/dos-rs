@@ -21,7 +21,7 @@ echo "Target: $RUST_TARGET"
 
 cargo build $RUST_XFLAGS --target ./$RUST_TARGET.json
 
-APPNAME="ferris"
+APPNAME="opl"
 LIBNAME="lib$APPNAME.a"
 
 # Extract the object files from the ELF static library
@@ -52,5 +52,5 @@ else
     C_XFLAGS="$C_XFLAGS -O0 -g"
 fi
 
-$CC $C_XFLAGS -o ../ferris.exe "../$LIBNAME"
-echo "build/$target/ferris.exe built"
+$CC $C_XFLAGS -o ../$APPNAME.exe "../$LIBNAME"
+echo "build/$target/$APPNAME.exe built"

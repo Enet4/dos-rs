@@ -14,18 +14,35 @@ This project also contains a few preliminary modules that grant easier
 access to DOS-specific capabilities, namely port I/O, calling interrupts,
 and VGA graphics.
 
+## Overview
+
+In this repository you will find:
+
+- [djgpp](djgpp): a low-level library for interfacing with the libc and DJGPP API
+- [dos_x](dos_x): an experimental library to assist in the creation of DOS programs
+- [examples/ferris](examples/ferris): an example program that shows a picture
+- and instructions on how to make this all work.
+
 ## Status
 
 While there are not many stability and performance guarantees at the moment,
-the proofs of concept written so far appear to work as inteded.
-There is also no `std` support,
-but it should be possible to write an allocator for `alloc` support.
+the proofs of concept written so far appear to work as intended.
+There is no `std` support,
+but an allocator is available.
 
 The development experience is also not as fluid as it could be.
 The Rust program exports a C main function,
 so it exists as a static C library.
 The compiled objects need to be converted
 before they are linked together using `i686-pc-msdosdjgpp-gcc`.
+
+Known caveats:
+
+- Be aware of soundness issues in the compilation of floating point arithmetic
+  against targets without SSE2.
+  <https://github.com/rust-lang/rust/issues/114479>
+  The use of `f32` or `f64` may be unreliable,
+  so test carefully.
 
 ## Requirements
 
@@ -48,7 +65,7 @@ Some variables in the script can be tuned to your liking.
 
 Copy the resulting `dos_rs.exe` file into your DOS environment,
 with [`CWSDPMI.EXE`](http://sandmann.dotster.com/cwsdpmi/) alongside it.
-It should then be ready run for a DOS machine, virtual machine, or emulator.
+It should then be ready to run on a DOS machine, virtual machine, or emulator.
 
 ## Related
 

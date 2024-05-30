@@ -1,6 +1,6 @@
 //! Simple keyboard input module.
 
-use crate::djgpp::{pc::inportb, dpmi::__dpmi_yield};
+use djgpp::{dpmi::__dpmi_yield, pc::inportb};
 
 pub fn wait_for_keypress(code: u8) {
     let mut c: u8 = 0;
@@ -14,7 +14,5 @@ pub fn wait_for_keypress(code: u8) {
 
 #[inline]
 pub fn get_keypress() -> u8 {
-    unsafe {
-        inportb(0x60)
-    }
+    unsafe { inportb(0x60) }
 }
