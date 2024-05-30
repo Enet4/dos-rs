@@ -1,5 +1,5 @@
 //! malloc.h
-//! 
+//!
 //! For other memory allocation functions,
 //! see [`stdlib`](super::stdlib).
 

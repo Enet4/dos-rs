@@ -1,5 +1,5 @@
 //! Extern "C" subset of declarations from `stdlib.h`.
-//! 
+//!
 //! We cannot use the `libc` crate
 //! because the compilation target i686-unknown-none-gnu is not recognized.
 

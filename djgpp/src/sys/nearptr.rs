@@ -14,7 +14,7 @@ extern "C" {
     pub fn __djgpp_nearptr_disable();
 
     /* Limit on CS and on DS if prot */
-    pub static __djgpp_selector_limit: c_int;	
+    pub static __djgpp_selector_limit: c_int;
     /* Used in calculation below */
     pub static __djgpp_base_address: c_int;
 }

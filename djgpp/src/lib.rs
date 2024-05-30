@@ -1,19 +1,19 @@
 //! DJGPP low level API
-//! 
+//!
 //! This no-std crate exposes the C API made available
 //! when building programs targeting DOS systems via [DJGPP][]
-//! 
+//!
 //! ## Using and building
-//! 
+//!
 //! Aside from including this in your project,
 //! you also need to declare end user applications
 //! as a static library:
-//! 
+//!
 //! ```toml
 //! [lib]
 //! crate-type = ["staticlib"]
 //! ```
-//! 
+//!
 //! Note that for your programs to work with DJGPP,
 //! they need to be linked together using the DJGPP GCC compiler.
 //! Install pc-msdosdjgpp-gcc for the intended target architecture
@@ -34,11 +34,12 @@
 //!
 //! [DJGPP]: https://www.delorie.com/djgpp/
 #![no_std]
-pub mod dpmi;
 pub mod dos;
+pub mod dpmi;
+pub mod errno;
 pub mod go32;
-pub mod pc;
 pub mod malloc;
+pub mod pc;
 pub mod stdio;
 pub mod stdlib;
 
