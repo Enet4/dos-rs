@@ -3,7 +3,6 @@ members = [
     "djgpp",
     "dos_x",
     "examples/ferris",
-    "examples/opl",
 ]
 
 resolver = "2"
