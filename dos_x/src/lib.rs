@@ -1,16 +1,16 @@
 //! A high level API providing access to DOS capabilities via DJGPP.
-//! 
+//!
 //! ## Using and building
-//! 
+//!
 //! Aside from including this in your project,
 //! you also need to declare end user applications
 //! as a static library:
-//! 
+//!
 //! ```toml
 //! [lib]
 //! crate-type = ["staticlib"]
 //! ```
-//! 
+//!
 //! And bootstrap your program like this:
 //!
 //! ```rust
@@ -22,7 +22,7 @@
 //!     // ...
 //! }
 //! ```
-//! 
+//!
 //! Note that for your programs to work with DJGPP,
 //! they need to be linked together using the DJGPP GCC compiler.
 //! Install pc-msdosdjgpp-gcc for the intended target architecture
@@ -45,29 +45,32 @@
 
 #![no_std]
 #![feature(start)]
-pub mod alloc;
-pub mod vga;
-pub mod key;
+
+extern crate alloc;
+
 pub mod adlib;
+pub mod allocator;
+pub mod fs;
+pub mod io;
+pub mod key;
 pub mod sb;
+pub mod vga;
 
 // re-export
 pub use djgpp;
-use djgpp::stdlib::{c_int, c_char};
+use djgpp::stdlib::{c_char, c_int};
 
 static mut ARGV: &'static [*const c_char] = &[];
 
+/** Retrieve the command line arguments */
 pub fn argv() -> &'static [*const c_char] {
-    unsafe {
-        ARGV
-    }
+    unsafe { ARGV }
 }
 
 // This is the entry point for the DOS program via DJGPP
 #[start]
 #[no_mangle]
 pub extern "C" fn main(argc: c_int, argv: *const *const c_char) -> c_int {
-
     // initialive arguments
     unsafe {
         ARGV = core::slice::from_raw_parts(argv as *const _, argc as usize);

@@ -1,8 +1,8 @@
 //! A simple module for video mode and VGA graphics in DOS.
 
-use djgpp::dpmi::{__dpmi_regs, __dpmi_int};
-use djgpp::pc::{inportb, outportb};
+use djgpp::dpmi::{__dpmi_int, __dpmi_regs};
 use djgpp::go32::_dosmemputw;
+use djgpp::pc::{inportb, outportb};
 use djgpp::sys::farptr::_farpokeb;
 
 /// The numerical address to the VGA buffer
@@ -11,13 +11,13 @@ pub(crate) const VGA_BUFFER_ADDR: u32 = 0xa0000;
 /// Set the video mode.
 ///
 /// Example modes:
-/// 
+///
 /// - 0x02 for 80x25 text mode
 /// - 0x13 for 320x200 256-color mode
-/// 
-/// 
+///
+///
 /// ### Safety
-/// 
+///
 /// The caller must ensure that the video mode is valid.
 #[inline]
 pub unsafe fn set_video_mode(mode: u8) {
@@ -37,9 +37,9 @@ pub fn set_video_mode_13h() {
 }
 
 /// Put a single pixel value at the given coordinates.
-/// 
+///
 /// ### Safety
-/// 
+///
 /// This function does not check whether the video mode is set correctly.
 /// A video buffer of size 64_000 bytes is assumed.
 #[inline]
@@ -54,9 +54,9 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 }
 
 /// Draw the entirety of the given data buffer to the video buffer.
-/// 
+///
 /// ### Safety
-/// 
+///
 /// This function does not check whether the video mode is set correctly.
 #[inline]
 pub unsafe fn draw_buffer(data: &[u8]) {
@@ -95,7 +95,6 @@ pub unsafe fn vsync() {
 pub struct Palette(pub [u8; 768]);
 
 impl Palette {
-
     /// Create a new palette from a given array.
     #[inline]
     pub fn new(palette: [u8; 768]) -> Self {
@@ -106,7 +105,9 @@ impl Palette {
     pub fn get() -> Self {
         let mut palette = [0u8; 768];
         // want to read
-        unsafe { outportb(0x3c7, 0); }
+        unsafe {
+            outportb(0x3c7, 0);
+        }
         for p in &mut palette {
             *p = unsafe { inportb(0x3c9) };
         }
@@ -116,9 +117,13 @@ impl Palette {
     /// Apply this palette in the system.
     pub fn set(&self) {
         // want to write
-        unsafe { outportb(0x3c8, 0); }
+        unsafe {
+            outportb(0x3c8, 0);
+        }
         for p in &self.0 {
-            unsafe { outportb(0x3c9, *p); }
+            unsafe {
+                outportb(0x3c9, *p);
+            }
         }
     }
 }

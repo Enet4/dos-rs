@@ -1,4 +1,3 @@
-
 use djgpp::pc::{inportb, outportb};
 
 /// The default Adlib address port
@@ -17,7 +16,6 @@ const ADLIB_DEFAULT_R_ADDR: u16 = 0x0222;
 const ADLIB_DEFAULT_R_DATA: u16 = 0x0223;
 
 pub fn detect_adlib() -> u8 {
-
     unsafe {
         // 1) reset both timers
         write_command(0x04, 0x60);
@@ -43,7 +41,7 @@ pub fn detect_adlib() -> u8 {
         write_command(0x04, 0x60);
 
         // 9) check if est the stored results of steps 3 and 7 by ANDing them
-        //    with E0h.  The result of step 3 should be 00h, and the 
+        //    with E0h.  The result of step 3 should be 00h, and the
         //    result of step 7 should be C0h.  If both are correct, an
         //    AdLib-compatible board is installed in the computer.
         if (status & 0xe0) == 0 && (status2 & 0xe0) == 0xc0 {
