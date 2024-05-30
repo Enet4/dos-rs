@@ -1,12 +1,11 @@
 //! Example Rust program that runs in MS-DOS.
-//! 
-//! 
+//!
 #![no_std]
 #![no_main]
 extern crate alloc;
 use alloc::vec::Vec;
-use dos_x::djgpp::{stdio::puts, stdlib::exit};
 use core::panic::PanicInfo;
+use dos_x::{djgpp::stdlib::exit, println};
 use libm::sinf;
 
 use dos_x::{key::wait_for_keypress, vga::vsync};
@@ -19,7 +18,7 @@ type c_char = i8;
 #[no_mangle]
 fn dos_main() {
     unsafe {
-        puts(b"Rust says hello DOS!\nPress Enter to continue\0".as_ptr() as *const c_char);
+        println!("Rust says hello DOS!\nPress Enter to continue");
 
         busy_wait(100_000);
         wait_for_keypress(0x1c);
@@ -55,14 +54,16 @@ fn dos_main() {
         // set back to text mode
         dos_x::vga::set_video_mode(0x02);
 
-        puts(b"< Bye >
+        println!(
+            "< Bye >
  -----
     \\
      \\
        _~^~^~_
    \\) /  o o  \\ (/
      '_   -   _'
-     / '-----' \\\0".as_ptr() as *const c_char);
+     / '-----' \\"
+        );
     }
 }
 

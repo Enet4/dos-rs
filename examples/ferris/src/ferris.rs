@@ -21,7 +21,7 @@ pub fn ferris_color_palette() -> Palette {
     // color table in tif is channel-contiguous
     let palette_r = &FERRIS_TIF_DATA[palette_offset..palette_offset + g_offset];
     let palette_g = &FERRIS_TIF_DATA[palette_offset + g_offset..palette_offset + b_offset];
-    let palette_b = &FERRIS_TIF_DATA[palette_offset + b_offset ..palette_offset + palette_size];
+    let palette_b = &FERRIS_TIF_DATA[palette_offset + b_offset..palette_offset + palette_size];
 
     let mut palette = [0xffu8; 768];
 
