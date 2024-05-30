@@ -1,6 +1,9 @@
 
 # MS-DOS with Rust
 
+[![ci](https://github.com/Enet4/dos-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/Enet4/dos-rs/actions/workflows/ci.yml)
+[![pages-build-deployment](https://github.com/Enet4/dos-rs/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/Enet4/dos-rs/actions/workflows/pages/pages-build-deployment)
+
 This is an attempt at building a Rust project to target
 MS-DOS in protected mode via [DJGPP](http://www.delorie.com/djgpp/),
 supporting x86 CPUs architectures from i386 to i686.
