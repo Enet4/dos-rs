@@ -23,14 +23,7 @@ fn dos_main() {
     let args = dos_x::argv();
 
     let vgm_filename = if args.len() > 1 {
-        // if there are any arguments, print them
         unsafe {
-            puts(b"Command line arguments:\0".as_ptr() as *const c_char);
-            for arg in args.iter().skip(1) {
-                let str = core::ffi::CStr::from_ptr(*arg);
-                let msg = format!(" - {}\0", str.to_string_lossy());
-                puts(msg.as_ptr() as *const c_char);
-            }
             Some(CStr::from_ptr(args[1]))
         }
     } else {
