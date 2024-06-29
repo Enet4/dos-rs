@@ -73,29 +73,46 @@ fn app_loop(ferris: &[u8]) {
 
     let gif_width = 320;
     let gif_height = 200;
+    let ferris_top = 40;
+    let ferris_bottom = 160;
     let mut k = 0;
     let mut angle = 0.;
 
     let mut video = [0; 320 * 200];
 
+    // do the first draw
+    video.copy_from_slice(ferris);
+
     while !shutdown {
         let s = sinf(angle * core::f32::consts::PI / 180.);
+        let osc = (s * 22.) as i32;
         k += 2;
         if k >= gif_width {
             k = 0;
         }
-        angle += 3.;
+        angle += 2.;
         if angle > 360. {
             angle -= 360.;
         }
-        let mut dest_ofs = 0;
-        for y in 0..200 {
+
+        // draw the ferris in its new position.
+        // optimization: we pick the lines to scan
+        // based on the osc value
+        let top = (ferris_top - osc).max(0) as u32;
+        let bottom = (ferris_bottom - osc).min(200) as u32;
+        for y in top..bottom {
+            let mut dest_ofs = y as usize * 320;
+
+            // draw lines of ferris
             for x in 0..320 {
-                let osc = (s * 22.) as i32;
                 let u = (x + k) % gif_width;
-                let v = ((y as i32 + osc) as u32).clamp(0, gif_height - 1);
-                let src_ofs = u + v * gif_width;
-                video[dest_ofs] = ferris[src_ofs as usize];
+
+                // optimization: skip rendering if u is off Ferris bounds
+                if (29..292).contains(&u) {
+                    let v = ((y as i32 + osc) as u32).clamp(0, gif_height - 1);
+                    let src_ofs = u + v * gif_width;
+                    video[dest_ofs] = ferris[src_ofs as usize];
+                }
                 dest_ofs += 1;
             }
         }
