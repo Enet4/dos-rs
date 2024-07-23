@@ -41,7 +41,8 @@ pub fn set_video_mode_13h() {
 /// ### Safety
 ///
 /// This function does not check whether the video mode is set correctly.
-/// A video buffer of size 64_000 bytes is assumed.
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
 #[inline]
 pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
     if y >= 200 || x >= 320 {
@@ -51,6 +52,67 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
     let i = x + y * 320;
 
     _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i, c);
+}
+
+/// Draw a solid rectangle at the given coordinates.
+/// 
+/// ### Safety
+/// 
+/// This function does not check whether the video mode is set correctly.
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
+pub unsafe fn draw_rect(x: i32, y: i32, width: u32, height: u32, c: u8) {
+    for j in 0..height as i32 {
+        for i in 0..width as i32 {
+            let x = x + i;
+            if x < 0 {
+                continue;
+            }
+            let y = y + j;
+            if y < 0 {
+                continue;
+            }
+            put_pixel(x as u32, y as u32, c);
+        }
+    }
+}
+
+/// Given a rectangular portion of pixel data
+/// with the dimensions in `data_dim`,
+/// copy a rectangular portion of it
+/// defined by `origin` (x, y, width, height)
+/// onto the display at the `target` (x, y) coordinates.
+///
+/// ### Safety
+///
+/// This function does not check whether the video mode is set correctly.
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
+#[inline]
+pub unsafe fn blit_rect(
+        data: &[u8],
+        data_dim: (u32, u32),
+        origin: (u32, u32, u32, u32),
+        target: (i32, i32)
+) {
+
+    let (data_width, data_height) = data_dim;
+    let (x, y, width, height) = origin;
+    let (target_x, target_y) = target;
+
+    let data = if data.len() > (data_width * data_height) as usize {
+        &data[..(data_width * data_height) as usize]
+    } else {
+        data
+    };
+
+    for j in 0..height {
+        for i in 0..width {
+            let data_i = (x + i) + (y + j) * data_width;
+            let target_i = (target_x + i as i32) + (target_y + j as i32) * 320;
+            _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + target_i as u32, data[data_i as usize]);
+        }
+    }
 }
 
 /// Draw the entirety of the given data buffer to the video buffer.
