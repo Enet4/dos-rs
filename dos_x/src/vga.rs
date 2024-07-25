@@ -54,6 +54,43 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
     _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i, c);
 }
 
+/// Draw a solid horizontal line at the given coordinates.
+/// 
+/// ### Safety
+/// 
+/// This function does not check whether the video mode is set correctly.
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
+#[inline]
+pub unsafe fn draw_hline(x: i32, y: i32, length: u32, c: u8) {
+    if y < 0 || y >= 200 {
+        return;
+    }
+    let y = y as u32;
+    // clamp x and length
+    let x = x.max(0) as u32;
+    let length = length.min(320 - x);
+
+    let base = y * 320 + x;
+    for i in base..base + length {
+        _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, c);
+    }
+}
+
+/// Draw a solid vertical line at the given coordinates.
+///
+/// ### Safety
+///
+/// This function does not check whether the video mode is set correctly.
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
+#[inline]
+pub unsafe fn draw_vline(x: i32, y: i32, length: u32, c: u8) {
+    for j in 0..length {
+        put_pixel(x as u32, y as u32 + j, c);
+    }
+}
+
 /// Draw a solid rectangle at the given coordinates.
 /// 
 /// ### Safety
@@ -63,17 +100,7 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 /// in VGA mode 13h is assumed.
 pub unsafe fn draw_rect(x: i32, y: i32, width: u32, height: u32, c: u8) {
     for j in 0..height as i32 {
-        for i in 0..width as i32 {
-            let x = x + i;
-            if x < 0 {
-                continue;
-            }
-            let y = y + j;
-            if y < 0 {
-                continue;
-            }
-            put_pixel(x as u32, y as u32, c);
-        }
+        draw_hline(x, y + j, width, c);
     }
 }
 
@@ -120,6 +147,7 @@ pub unsafe fn blit_rect(
 /// ### Safety
 ///
 /// This function does not check whether the video mode is set correctly.
+/// A video buffer of size 64_000 bytes is assumed.
 #[inline]
 pub unsafe fn draw_buffer(data: &[u8]) {
     let data = if data.len() > 320 * 200 {
