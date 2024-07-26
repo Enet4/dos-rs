@@ -60,14 +60,14 @@ macro_rules! djgpp_try {
 macro_rules! println {
     ($template: literal) => {
         unsafe {
-            let msg = core::concat!($template, "\n\0").as_ptr() as *const c_char;
+            let msg = core::concat!($template, "\n\0").as_ptr() as *const core::ffi::c_char;
             $crate::djgpp::stdio::printf(msg);
         }
     };
     ($template: literal, $($arg: expr),*) => {
         unsafe {
             let msg = alloc::format!(core::concat!($template, "\n\0"), $(&$arg),*);
-            $crate::djgpp::stdio::printf(msg.as_ptr() as *const c_char);
+            $crate::djgpp::stdio::printf(msg.as_ptr() as *const core::ffi::c_char);
         }
     };
 }

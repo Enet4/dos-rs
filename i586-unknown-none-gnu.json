@@ -5,7 +5,7 @@
     "disable-redzone": true,
     "dynamic-linking": false,
     "executables": false,
-    "features": "-mmx",
+    "features": "+mmx",
     "linker-flavor": "gcc",
     "linker-is-gnu": true,
     "llvm-target": "i586-unknown-none-gnu",
