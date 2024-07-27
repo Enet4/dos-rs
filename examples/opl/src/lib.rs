@@ -23,9 +23,7 @@ fn dos_main() {
     let args = dos_x::argv();
 
     let vgm_filename = if args.len() > 1 {
-        unsafe {
-            Some(CStr::from_ptr(args[1]))
-        }
+        unsafe { Some(CStr::from_ptr(args[1])) }
     } else {
         None
     };

@@ -55,9 +55,9 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 }
 
 /// Draw a solid horizontal line at the given coordinates.
-/// 
+///
 /// ### Safety
-/// 
+///
 /// This function does not check whether the video mode is set correctly.
 /// A video buffer of size 64_000 bytes
 /// in VGA mode 13h is assumed.
@@ -104,9 +104,9 @@ pub unsafe fn draw_vline(x: i32, y: i32, length: u32, c: u8) {
 }
 
 /// Draw a solid rectangle at the given coordinates.
-/// 
+///
 /// ### Safety
-/// 
+///
 /// This function does not check whether the video mode is set correctly.
 /// A video buffer of size 64_000 bytes
 /// in VGA mode 13h is assumed.
@@ -129,12 +129,11 @@ pub unsafe fn draw_rect(x: i32, y: i32, width: u32, height: u32, c: u8) {
 /// in VGA mode 13h is assumed.
 #[inline]
 pub unsafe fn blit_rect(
-        data: &[u8],
-        data_dim: (u32, u32),
-        origin: (u32, u32, u32, u32),
-        target: (i32, i32)
+    data: &[u8],
+    data_dim: (u32, u32),
+    origin: (u32, u32, u32, u32),
+    target: (i32, i32),
 ) {
-
     let (data_width, data_height) = data_dim;
     let (x, y, width, height) = origin;
     let (target_x, target_y) = target;
@@ -152,7 +151,7 @@ pub unsafe fn blit_rect(
         dosmemput(
             data.as_ptr().byte_offset(src as isize),
             width as usize,
-            VGA_BUFFER_ADDR + target as u32
+            VGA_BUFFER_ADDR + target as u32,
         );
 
         // next row
