@@ -1,7 +1,7 @@
 //! A simple module for video mode and VGA graphics in DOS.
 
 use djgpp::dpmi::{__dpmi_int, __dpmi_regs};
-use djgpp::go32::_dosmemputw;
+use djgpp::go32::{_dosmemputw, dosmemput};
 use djgpp::pc::{inportb, outportb};
 use djgpp::sys::farptr::_farpokeb;
 
@@ -133,12 +133,19 @@ pub unsafe fn blit_rect(
         data
     };
 
-    for j in 0..height {
-        for i in 0..width {
-            let data_i = (x + i) + (y + j) * data_width;
-            let target_i = (target_x + i as i32) + (target_y + j as i32) * 320;
-            _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + target_i as u32, data[data_i as usize]);
-        }
+    let mut src = y * data_width + x;
+    let mut target = target_y * 320 + target_x;
+    for _ in 0..height {
+        // blit in contiguous data portions
+        dosmemput(
+            data.as_ptr().byte_offset(src as isize),
+            width as usize,
+            VGA_BUFFER_ADDR + target as u32
+        );
+
+        // next row
+        src += data_width;
+        target += 320;
     }
 }
 
