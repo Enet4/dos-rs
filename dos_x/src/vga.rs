@@ -3,7 +3,7 @@
 use djgpp::dpmi::{__dpmi_int, __dpmi_regs};
 use djgpp::go32::{_dosmemputw, dosmemput};
 use djgpp::pc::{inportb, outportb};
-use djgpp::sys::farptr::_farpokeb;
+use djgpp::sys::farptr::{_farpokeb, _farpokel};
 
 /// The numerical address to the VGA buffer
 pub(crate) const VGA_BUFFER_ADDR: u32 = 0xa0000;
@@ -72,8 +72,20 @@ pub unsafe fn draw_hline(x: i32, y: i32, length: u32, c: u8) {
     let length = length.min(320 - x);
 
     let base = y * 320 + x;
-    for i in base..base + length {
-        _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, c);
+
+    let cc = c as u16 | (c as u16) << 8;
+    let cccc = cc as u32 | (cc as u32) << 16;
+
+    // unroll into long far poke calls when possible
+    let mut i = base;
+    while i < base + length {
+        if i & 3 == 0 && i + 3 < base + length {
+            _farpokel(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, cccc);
+            i += 4;
+        } else {
+            _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, c);
+            i += 1;
+        }
     }
 }
 
