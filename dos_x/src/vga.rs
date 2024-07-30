@@ -195,10 +195,15 @@ pub unsafe fn vsync() {
 }
 
 /// A thin abstraction over the VGA color palette.
+///
 /// The array within contains the 256 colors in RGB,
 /// in standard layout (RGBRGBRGB...),
 /// allocating 8 bits per channel
 /// but only using 6 bits per channel.
+/// 
+/// If you prefer not to allocate,
+/// see [`set_colors_with`]
+/// or [`set_color_single`].
 #[derive(Copy, Clone)]
 pub struct Palette(pub [u8; 768]);
 
@@ -232,6 +237,45 @@ impl Palette {
             unsafe {
                 outportb(0x3c9, *p);
             }
+        }
+    }
+
+    /// Apply a single color in this palette to the system's palette.
+    pub fn set_single(&self, c: u8) {
+        let i = c as usize * 3;
+        let r = self.0[i];
+        let g = self.0[i + 1];
+        let b = self.0[i + 2];
+        set_color_single(c, r, g, b);
+    }
+}
+
+/// Set a single color in the VGA palette.
+pub fn set_color_single(c: u8, r: u8, g: u8, b: u8) {
+    unsafe {
+        outportb(0x3c8, c);
+        outportb(0x3c9, r);
+        outportb(0x3c9, g);
+        outportb(0x3c9, b);
+    }
+}
+
+/// Reset the system's VGA palette
+/// with the values coming from the given iterator.
+/// 
+/// The values from the iterator should be
+/// consecutive 8-bit RGB values
+/// (of 6-bit precision).
+///
+/// Iteration stops after 768 values.
+pub fn set_colors_with(values: impl IntoIterator<Item = u8>) {
+    // want to write
+    unsafe {
+        outportb(0x3c8, 0);
+    }
+    for p in values.into_iter().take(768) {
+        unsafe {
+            outportb(0x3c9, p);
         }
     }
 }
