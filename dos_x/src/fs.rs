@@ -89,25 +89,31 @@ impl File {
     ///
     /// If successful, this function will return the total number of bytes read.
     pub fn read_to_end(&mut self, buf: &mut Vec<u8>) -> Result<usize> {
-        // number of bytes to try to reserve at a time
-        const PAGE_SIZE: usize = 2_048;
+        let metadata = self.metadata()?;
+
+        let file_size = metadata.file_size();
+
+        let offset = buf.len();
+        buf.resize(offset + file_size, 0);
+
+        let mut rest = &mut buf[offset..];
+    
         let mut total = 0;
         loop {
-            let offset = buf.len();
-            let available = buf.capacity() - buf.len();
-            if available == 0 {
-                buf.resize(buf.len() + PAGE_SIZE, 0);
+            let bytes_read = self.read(rest)?;
+            total += bytes_read;
+            if bytes_read == 0 {
+                unsafe {
+                    let rest_len = rest.len();
+                    buf.set_len(buf.len() - rest_len);
+                    return Ok(total);
+                }
             }
-            let read = self.read(&mut buf[offset..])?;
-            if read == 0 {
+            if bytes_read == rest.len() {
                 return Ok(total);
             }
-            debug_assert!(read <= available);
-            // safety: it is assumed that offset + read cannot be larger than buf.capacity()
-            unsafe {
-                buf.set_len(offset + read);
-            }
-            total += read;
+            // update buffer rest and try again
+            rest = &mut rest[bytes_read..];
         }
     }
 
