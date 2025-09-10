@@ -1,6 +1,6 @@
 //! Port control functions (as declared in `pc.h`).
 
-extern "C" {
+unsafe extern "C" {
     pub fn inportb(_port: u16) -> u8;
     pub fn inportw(_port: u16) -> u16;
     pub fn inportl(_port: u16) -> u32;

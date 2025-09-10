@@ -21,11 +21,13 @@ pub(crate) const VGA_BUFFER_ADDR: u32 = 0xa0000;
 /// The caller must ensure that the video mode is valid.
 #[inline]
 pub unsafe fn set_video_mode(mode: u8) {
-    let mut regs: __dpmi_regs = core::mem::zeroed();
+    unsafe {
+        let mut regs: __dpmi_regs = core::mem::zeroed();
 
-    regs.x.ax = mode as u16;
+        regs.x.ax = mode as u16;
 
-    __dpmi_int(0x10, &mut regs);
+        __dpmi_int(0x10, &mut regs);
+    }
 }
 
 /// Set the video mode to 13h: 320x200 256-color
@@ -51,7 +53,9 @@ pub unsafe fn put_pixel(x: u32, y: u32, c: u8) {
 
     let i = x + y * 320;
 
-    _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i, c);
+    unsafe {
+        _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i, c);
+    }
 }
 
 /// Draw a solid horizontal line at the given coordinates.
@@ -80,10 +84,14 @@ pub unsafe fn draw_hline(x: i32, y: i32, length: u32, c: u8) {
     let mut i = base;
     while i < base + length {
         if i & 3 == 0 && i + 3 < base + length {
-            _farpokel(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, cccc);
+            unsafe {
+                _farpokel(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, cccc);
+            }
             i += 4;
         } else {
-            _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, c);
+            unsafe {
+                _farpokeb(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, c);
+            }
             i += 1;
         }
     }
@@ -99,7 +107,9 @@ pub unsafe fn draw_hline(x: i32, y: i32, length: u32, c: u8) {
 #[inline]
 pub unsafe fn draw_vline(x: i32, y: i32, length: u32, c: u8) {
     for j in 0..length {
-        put_pixel(x as u32, y as u32 + j, c);
+        unsafe {
+            put_pixel(x as u32, y as u32 + j, c);
+        }
     }
 }
 
@@ -112,7 +122,9 @@ pub unsafe fn draw_vline(x: i32, y: i32, length: u32, c: u8) {
 /// in VGA mode 13h is assumed.
 pub unsafe fn draw_rect(x: i32, y: i32, width: u32, height: u32, c: u8) {
     for j in 0..height as i32 {
-        draw_hline(x, y + j, width, c);
+        unsafe {
+            draw_hline(x, y + j, width, c);
+        }
     }
 }
 
@@ -147,12 +159,14 @@ pub unsafe fn blit_rect(
     let mut src = y * data_width + x;
     let mut target = target_y * 320 + target_x;
     for _ in 0..height {
-        // blit in contiguous data portions
-        dosmemput(
-            data.as_ptr().byte_offset(src as isize),
-            width as usize,
-            VGA_BUFFER_ADDR + target as u32,
-        );
+        unsafe {
+            // blit in contiguous data portions
+            dosmemput(
+                data.as_ptr().byte_offset(src as isize),
+                width as usize,
+                VGA_BUFFER_ADDR + target as u32,
+            );
+        }
 
         // next row
         src += data_width;
@@ -173,23 +187,27 @@ pub unsafe fn draw_buffer(data: &[u8]) {
     } else {
         data
     };
-    _dosmemputw(data.as_ptr(), data.len() / 2, VGA_BUFFER_ADDR);
+    unsafe {
+        _dosmemputw(data.as_ptr(), data.len() / 2, VGA_BUFFER_ADDR);
+    };
 }
 
 /// Synchronize the program with the vertical retrace
 #[inline]
 pub unsafe fn vsync() {
-    // wait until any previous retrace has ended
-    loop {
-        if (inportb(0x3DA) & 8) != 0 {
-            break;
+    unsafe {
+        // wait until any previous retrace has ended
+        loop {
+            if (inportb(0x3DA) & 8) != 0 {
+                break;
+            }
         }
-    }
 
-    /* wait until a new retrace has just begun */
-    loop {
-        if (inportb(0x3DA) & 8) == 0 {
-            break;
+        /* wait until a new retrace has just begun */
+        loop {
+            if (inportb(0x3DA) & 8) == 0 {
+                break;
+            }
         }
     }
 }
@@ -200,7 +218,7 @@ pub unsafe fn vsync() {
 /// in standard layout (RGBRGBRGB...),
 /// allocating 8 bits per channel
 /// but only using 6 bits per channel.
-/// 
+///
 /// If you prefer not to allocate,
 /// see [`set_colors_with`]
 /// or [`set_color_single`].
@@ -262,7 +280,7 @@ pub fn set_color_single(c: u8, r: u8, g: u8, b: u8) {
 
 /// Reset the system's VGA palette
 /// with the values coming from the given iterator.
-/// 
+///
 /// The values from the iterator should be
 /// consecutive 8-bit RGB values
 /// (of 6-bit precision).

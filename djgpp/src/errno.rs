@@ -1,6 +1,6 @@
 use core::ffi::{c_char, c_int};
 
-extern "C" {
+unsafe extern "C" {
     pub static errno: c_int;
     pub static sys_errlist: *const *const c_char;
     pub static sys_nerr: c_int;

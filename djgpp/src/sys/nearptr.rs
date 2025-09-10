@@ -7,7 +7,7 @@
 
 use core::ffi::c_int;
 
-extern "C" {
+unsafe extern "C" {
     /** Returns 0 if feature not avail */
     pub fn __djgpp_nearptr_enable() -> c_int;
     /** Enables protection */

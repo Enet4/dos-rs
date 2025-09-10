@@ -8,14 +8,16 @@ const SB_READ_DATA: u16 = 0xA;
 const SB_READ_DATA_STATUS: u16 = 0xE;
 
 unsafe fn reset_dsp(port: u16) -> u8 {
-    outportb(port + SB_RESET, 1);
-    delay(1);
-    outportb(port + SB_RESET, 0);
-    delay(1);
+    unsafe {
+        outportb(port + SB_RESET, 1);
+        delay(1);
+        outportb(port + SB_RESET, 0);
+        delay(1);
 
-    let status = inportb(port + SB_READ_DATA_STATUS);
-    if (status & 0x80) == 0x80 && inportb(port + SB_READ_DATA) == 0xAA {
-        return 1;
+        let status = inportb(port + SB_READ_DATA_STATUS);
+        if (status & 0x80) == 0x80 && inportb(port + SB_READ_DATA) == 0xAA {
+            return 1;
+        }
     }
 
     0
