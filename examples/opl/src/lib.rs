@@ -17,15 +17,13 @@ use opbinary::vgm::OplCommand;
 #[allow(non_camel_case_types)]
 type c_char = i8;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn dos_main() {
     // try to read command line arguments
     let args = dos_x::argv();
 
     let vgm_filename = if args.len() > 1 {
-        unsafe {
-            Some(CStr::from_ptr(args[1]))
-        }
+        unsafe { Some(CStr::from_ptr(args[1])) }
     } else {
         None
     };

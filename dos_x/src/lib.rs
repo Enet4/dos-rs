@@ -44,7 +44,6 @@
 //! [DJGPP]: https://www.delorie.com/djgpp/
 
 #![no_std]
-#![feature(start)]
 
 extern crate alloc;
 
@@ -68,15 +67,14 @@ pub fn argv() -> &'static [*const c_char] {
 }
 
 // This is the entry point for the DOS program via DJGPP
-#[start]
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn main(argc: c_int, argv: *const *const c_char) -> c_int {
     // initialive arguments
     unsafe {
         ARGV = core::slice::from_raw_parts(argv as *const _, argc as usize);
     }
 
-    extern "Rust" {
+    unsafe extern "Rust" {
         fn dos_main();
     }
 

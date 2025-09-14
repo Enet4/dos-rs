@@ -54,20 +54,26 @@ pub fn detect_adlib() -> u8 {
 
 /// Send an OPL command
 pub unsafe fn write_command(register: u8, data: u8) {
-    outportb(ADLIB_DEFAULT_ADDR, register);
-    outportb(ADLIB_DEFAULT_DATA, data);
+    unsafe {
+        outportb(ADLIB_DEFAULT_ADDR, register);
+        outportb(ADLIB_DEFAULT_DATA, data);
+    }
 }
 
 /// Send an OPL command to the left speaker
 pub unsafe fn write_command_l(register: u8, data: u8) {
-    outportb(ADLIB_DEFAULT_L_ADDR, register);
-    outportb(ADLIB_DEFAULT_L_DATA, data);
+    unsafe {
+        outportb(ADLIB_DEFAULT_L_ADDR, register);
+        outportb(ADLIB_DEFAULT_L_DATA, data);
+    }
 }
 
 /// Send an OPL command to the right speaker
 pub unsafe fn write_command_r(register: u8, data: u8) {
-    outportb(ADLIB_DEFAULT_R_ADDR, register);
-    outportb(ADLIB_DEFAULT_R_DATA, data);
+    unsafe {
+        outportb(ADLIB_DEFAULT_R_ADDR, register);
+        outportb(ADLIB_DEFAULT_R_DATA, data);
+    }
 }
 
 pub fn reset_adlib() {

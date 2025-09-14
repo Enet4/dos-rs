@@ -12,7 +12,7 @@ pub struct FILE {
     _opaque: [u8; 0],
 }
 
-extern "C" {
+unsafe extern "C" {
     pub fn clearerr(stream: *mut FILE);
     pub fn fclose(stream: *mut FILE) -> c_int;
     pub fn feof(stream: *mut FILE) -> c_int;

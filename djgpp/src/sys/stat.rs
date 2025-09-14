@@ -41,7 +41,7 @@ impl Stat {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     pub fn chmod(path: *const c_char, _mode: mode_t) -> c_int;
     pub fn fchmod(_fildes: c_int, _mode: mode_t) -> c_int;
     pub fn fstat(_fildes: c_int, _buf: *mut Stat) -> c_int;

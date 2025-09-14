@@ -2,6 +2,6 @@
 name = "djgpp"
 version = "0.1.0"
 description = "Low level bindings to DJGPP"
-edition = "2021"
+edition = "2024"
 
 [dependencies]

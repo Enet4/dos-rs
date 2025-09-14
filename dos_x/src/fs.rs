@@ -8,7 +8,7 @@ use core::ffi::{c_char, c_int, CStr};
 
 use alloc::vec::Vec;
 use djgpp::{
-    stdio::{clearerr, feof, fflush, fileno, fopen, fread, FILE},
+    stdio::{clearerr, fclose, feof, fflush, fileno, fopen, fread, FILE},
     sys::stat::{fstat, Stat},
 };
 
@@ -78,6 +78,44 @@ impl File {
             out
         }
     }
+    
+    /// Read all bytes until EOF in this source, placing them into `buf`.
+    ///
+    /// All bytes read from this source will be appended
+    /// to the specified buffer `buf`.
+    /// This function will continuously call `read()`
+    /// to append more data to buf until `read()`
+    /// returns either `Ok(0)` or an error.
+    ///
+    /// If successful, this function will return the total number of bytes read.
+    pub fn read_to_end(&mut self, buf: &mut Vec<u8>) -> Result<usize> {
+        let metadata = self.metadata()?;
+
+        let file_size = metadata.file_size();
+
+        let offset = buf.len();
+        buf.resize(offset + file_size, 0);
+
+        let mut rest = &mut buf[offset..];
+    
+        let mut total = 0;
+        loop {
+            let bytes_read = self.read(rest)?;
+            total += bytes_read;
+            if bytes_read == 0 {
+                unsafe {
+                    let rest_len = rest.len();
+                    buf.set_len(buf.len() - rest_len);
+                    return Ok(total);
+                }
+            }
+            if bytes_read == rest.len() {
+                return Ok(total);
+            }
+            // update buffer rest and try again
+            rest = &mut rest[bytes_read..];
+        }
+    }
 
     pub fn flush(&mut self) -> Result<()> {
         unsafe {
@@ -85,8 +123,33 @@ impl File {
             Ok(())
         }
     }
+
+    /// Close the file descriptor explicitly,
+    /// returning any error that occurs.
+    ///
+    /// Note that the [`Drop`] implementation already closes the file.
+    /// Use this method when it is desirable to handle the error formally.
+    pub fn close(self) -> Result<()> {
+        unsafe {
+            djgpp_try!(fclose(self.inner));
+            core::mem::forget(self);
+            Ok(())
+        }
+    }
 }
 
+impl Drop for File {
+    fn drop(&mut self) {
+        unsafe {
+            fclose(self.inner);
+        }
+    }
+}
+
+/// Read the entire contents of a file into a bytes vector.
+///
+/// To reuse an existing vector,
+/// prefer using [`File::open`] and [`read_to_end`](File::read_to_end).
 pub fn read(path: impl AsRef<CStr>) -> Result<Vec<u8>> {
     let mut f = File::open(path)?;
     let metadata = f.metadata()?;
