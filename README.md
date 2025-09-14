@@ -6,7 +6,7 @@
 
 This is an attempt at building a Rust project to target
 MS-DOS in protected mode via [DJGPP](http://www.delorie.com/djgpp/),
-supporting x86 CPUs architectures from i386 to i686.
+supporting x86 CPUs architectures from i486 to i686.
 
 To engage in the discussion to reach this goal, please check out [this GitHub issue](https://github.com/Serentty/rusty-dos/issues/3) and [this thread](https://groups.google.com/forum/#!msg/comp.os.msdos.djgpp/0l6wjO-oSM0/wucHtHpCAgAJ).
 After many different attempts,
@@ -49,10 +49,10 @@ Known caveats:
 
 ## Requirements
 
-- Build and install [`elf2dgpp`](https://github.com/cknave/elf2djgpp)
-- A nightly Rust toolchain (defined in [rust-toolchain](rust-toolchain))
+- Build and install [an updated version of `elf2dgpp`](https://github.com/Enet4/elf2djgpp)
+- A nightly Rust toolchain (defined in [rust-toolchain.toml](rust-toolchain.toml))
 - The [DJGGP GCC toolchain](https://www.delorie.com/djgpp)
-  (version 12.2.0 is known to work, but it should work with more versions as is).
+  (version 14.1.0 is known to work, but it should work with more versions as is).
 
 ## Building
 
