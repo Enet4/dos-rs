@@ -17,6 +17,7 @@ zip -q dos_rs.zip \
     ferris.exe \
     opl.exe \
     abnormal.vgm \
+    wares.vgm \
     .jsdos/dosbox.conf
 rm ferris.exe opl.exe
 
