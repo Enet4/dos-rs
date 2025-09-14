@@ -19,11 +19,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Cache elf2djgpp
-      id: cache-elf2djgpp-bin
+      id: cache-elf2djgpp
       uses: actions/cache@v4
       with:
         path: ~/.cargo/bin/elf2djgpp
-        key: ${{ runner.os }}-elf2djgpp
+        key: ${{ runner.os }}-elf2djgpp-bin
     - uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         cache: true
@@ -43,7 +43,7 @@ jobs:
         # test
         "${{ env.ARCH }}-pc-msdosdjgpp-gcc" --version
     - name: Install elf2djgpp
-      if: steps.cache-elf2djgpp-bin.outputs.cache-hit != 'true'
+      if: steps.cache-elf2djgpp.outputs.cache-hit != 'true'
       run: |
         mkdir -p /tmp/elf2djgpp
         cd /tmp/elf2djgpp
