@@ -2,14 +2,14 @@
 
 /* These lengths are in bytes, optimized for speed */
 
-extern "C" {
+unsafe extern "C" {
     pub fn dosmemget(_offset: u32, _length: usize, _buffer: *mut u8);
     pub fn dosmemput(_buffer: *const u8, _length: usize, _offset: u32);
 }
 
 /* The lengths here are in TRANSFERS, not bytes! */
 
-extern "C" {
+unsafe extern "C" {
     pub fn _dosmemgetb(_offset: u32, _xfers: usize, _buffer: *mut u8);
     pub fn _dosmemgetw(_offset: u32, _xfers: usize, _buffer: *mut u8);
     pub fn _dosmemgetl(_offset: u32, _xfers: usize, _buffer: *mut u8);
@@ -36,7 +36,7 @@ pub struct __Go32_Info_Block {
     pub run_mode_info: u16,
 }
 
-extern "C" {
+unsafe extern "C" {
     pub static _go32_info_block: __Go32_Info_Block;
 }
 

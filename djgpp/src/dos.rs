@@ -1,6 +1,6 @@
 //! dos.h
 
-extern "C" {
+unsafe extern "C" {
     pub fn _get_dos_version(x: i32) -> u16;
     pub fn _get_fat_size(_drive: i32) -> i32;
     pub fn _get_fs_type(_drive: i32, _result_str: *const u8) -> i32;

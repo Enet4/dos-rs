@@ -3,7 +3,7 @@ name = "ferris"
 publish = false
 description = "An example of a DOS program written in Rust"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [lib]
 crate-type = ["staticlib"]

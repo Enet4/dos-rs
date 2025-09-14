@@ -12,7 +12,7 @@ pub type c_short = i16;
 #[allow(non_camel_case_types)]
 pub type c_char = i8;
 
-extern "C" {
+unsafe extern "C" {
     pub fn calloc(nmemb: usize, size: usize) -> *mut u8;
     pub fn free(ptr: *mut u8);
 

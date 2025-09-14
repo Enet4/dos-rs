@@ -1,6 +1,6 @@
 // farptr.h
 
-extern "C" {
+unsafe extern "C" {
     pub fn _farpokeb(selector: u16, offset: u32, value: u8);
     pub fn _farpokew(selector: u16, offset: u32, value: u16);
     pub fn _farpokel(selector: u16, offset: u32, value: u32);

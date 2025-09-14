@@ -81,7 +81,7 @@ pub union __dpmi_regs {
     pub h: __dpmi_regs_h,
 }
 
-extern "C" {
+unsafe extern "C" {
     pub fn __dpmi_allocate_dos_memory(size: u32, segment: *mut u16) -> __dpmi_error;
 
     pub fn __dpmi_free_dos_memory(segment: u16) -> __dpmi_error;

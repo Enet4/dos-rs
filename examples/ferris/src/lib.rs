@@ -12,10 +12,7 @@ use dos_x::{key::wait_for_keypress, vga::vsync};
 
 mod ferris;
 
-#[allow(non_camel_case_types)]
-type c_char = i8;
-
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn dos_main() {
     unsafe {
         println!("Rust says hello DOS!\nPress Enter to continue");
