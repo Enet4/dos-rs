@@ -19,8 +19,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Cache elf2djgpp
-      id: cache-elf2djgpp
-      uses: actions/cache@v3
+      id: cache-elf2djgpp-bin
+      uses: actions/cache@v4
       with:
         path: ~/.cargo/bin/elf2djgpp
         key: ${{ runner.os }}-elf2djgpp
@@ -43,14 +43,13 @@ jobs:
         # test
         "${{ env.ARCH }}-pc-msdosdjgpp-gcc" --version
     - name: Install elf2djgpp
-      if: steps.cache-elf2djgpp.outputs.cache-hit != 'true'
+      if: steps.cache-elf2djgpp-bin.outputs.cache-hit != 'true'
       run: |
         mkdir -p /tmp/elf2djgpp
         cd /tmp/elf2djgpp
-        git clone --depth 1 https://github.com/cknave/elf2djgpp.git
+        git clone --depth 1 https://github.com/Enet4/elf2djgpp.git
         cd elf2djgpp
-        rustup default stable
-        cargo install --path .
+        cargo +stable install --path .
         # clean up
         rm -rf elf2djgpp
         # test
