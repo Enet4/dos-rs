@@ -34,6 +34,7 @@
 //!
 //! [DJGPP]: https://www.delorie.com/djgpp/
 #![no_std]
+pub mod conio;
 pub mod dos;
 pub mod dpmi;
 pub mod errno;
