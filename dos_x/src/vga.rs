@@ -1,5 +1,11 @@
 //! A simple module for video mode and VGA graphics in DOS.
-
+//! 
+//! Note that this module assumes that a VGA graphics card is available
+//! (to be operated in the usual VGA buffer address at 0xA0000),
+//! and that interrupt 0x10 is available for setting video modes
+//! and color palettes.
+//! Other than that, most functions are `unsafe`
+//! because they often assume that the video mode is set correctly.
 use djgpp::dpmi::{__dpmi_int, __dpmi_regs};
 use djgpp::go32::{_dosmemputw, dosmemput};
 use djgpp::pc::{inportb, outportb};
@@ -125,6 +131,27 @@ pub unsafe fn draw_rect(x: i32, y: i32, width: u32, height: u32, c: u8) {
         unsafe {
             draw_hline(x, y + j, width, c);
         }
+    }
+}
+
+/// Clear the entire screen with the given color.
+///
+/// ### Safety
+///
+/// A video buffer of size 64_000 bytes
+/// in VGA mode 13h is assumed.
+pub unsafe fn clear_screen(c: u8) {
+    let cc = c as u16 | (c as u16) << 8;
+    let cccc = cc as u32 | (cc as u32) << 16;
+    let length = 320 * 200;
+
+    // unroll into long far poke calls
+    let mut i = 0;
+    while i < length {
+        unsafe {
+            _farpokel(djgpp::_dos_ds!(), VGA_BUFFER_ADDR + i as u32, cccc);
+        }
+        i += 4;
     }
 }
 
