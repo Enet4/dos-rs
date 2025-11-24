@@ -1,5 +1,5 @@
 //! A simple module for video mode and VGA graphics in DOS.
-//! 
+//!
 //! Note that this module assumes that a VGA graphics card is available
 //! (to be operated in the usual VGA buffer address at 0xA0000),
 //! and that interrupt 0x10 is available for setting video modes
@@ -217,6 +217,51 @@ pub unsafe fn draw_buffer(data: &[u8]) {
     unsafe {
         _dosmemputw(data.as_ptr(), data.len() / 2, VGA_BUFFER_ADDR);
     };
+}
+
+/// Read the entirety of the video buffer
+/// into the given buffer.
+///
+/// The function will read as many bytes as the length of the provided buffer.
+///
+/// # Safety
+///
+/// There are no bound checks on the buffer's length,
+/// so the function may read beyond the video buffer's limits.
+pub unsafe fn read_video_buffer(buffer: &mut [u8]) {
+    unsafe {
+        djgpp::go32::dosmemget(VGA_BUFFER_ADDR, buffer.len(), buffer.as_mut_ptr());
+    }
+}
+
+/// Read a rectangular portion
+/// (top-left corner at `origin`, dimensions in pixels `dim`)
+/// of the video buffer into the given buffer.
+///
+/// # Safety
+///
+/// This function does not check whether the video mode
+/// is set correctly to mode 13h.
+pub unsafe fn read_video_buffer_rect(buffer: &mut [u8], origin: (i32, i32), dim: (u32, u32)) {
+    let (x, y) = origin;
+    let (width, height) = dim;
+
+    let mut dest = 0;
+    let mut src = y as u32 * 320 + x as u32;
+    for _ in 0..height {
+        unsafe {
+            // read row of pixels
+            djgpp::go32::dosmemget(
+                VGA_BUFFER_ADDR + src,
+                width as usize,
+                buffer.as_mut_ptr().byte_offset(dest as isize),
+            );
+        }
+
+        // next row
+        src += 320;
+        dest += width;
+    }
 }
 
 /// Synchronize the program with the vertical retrace
