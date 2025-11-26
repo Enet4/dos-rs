@@ -12,7 +12,7 @@ use dos_x::djgpp::{dos::delay, stdio::puts, stdlib::exit};
 use dos_x::key::get_keypress;
 use dos_x::println;
 use dos_x::sb::detect_sb;
-use opbinary::vgm::OplCommand;
+use opbinary::vgm::{OplCommand, OplVgm};
 
 #[allow(non_camel_case_types)]
 type c_char = i8;
@@ -190,13 +190,22 @@ fn run_player(filename: &CStr) {
         }
     };
 
+    play_async(&vgm);
+
+    adlib_voice_off();
+    reset_adlib();
+}
+
+fn samples_to_ms(samples: u32) -> u32 {
+    samples * 10 / 441
+}
+
+/// implementation of synchrnous Adlib music playback
+/// (blocking, does not let other code run while playing)
+fn play_sync(vgm: &OplVgm) {
     println!("Now playing... (Hold Esc to stop)");
 
-    fn samples_to_ms(samples: u32) -> u32 {
-        samples * 10 / 441
-    }
-
-    for cmd in vgm.opl_commands {
+    for cmd in vgm.opl_commands.iter().cloned() {
         match cmd {
             OplCommand::Opl3 {
                 port: 0,
@@ -243,7 +252,107 @@ fn run_player(filename: &CStr) {
             },
         }
     }
+}
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+enum PlaybackState {
+    Playing,
+    Stopped,
+}
+
+/// An async processor of Adlib music playback
+struct AdlibPlayReactor<'a> {
+    vgm: &'a OplVgm,
+    cmd_index: usize,
+    timer: u32,
+}
+
+impl<'a> AdlibPlayReactor<'a> {
+    pub fn new(vgm: &'a OplVgm) -> Self {
+        Self {
+            vgm,
+            cmd_index: 0,
+            timer: 0,
+        }
+    }
+
+    pub fn poll(&mut self, delta_ms: u32) -> PlaybackState {
+        self.timer = self.timer.saturating_sub(delta_ms);
+
+        while self.timer == 0 && self.cmd_index < self.vgm.opl_commands.len() {
+            let cmd = &self.vgm.opl_commands[self.cmd_index];
+            match cmd {
+                OplCommand::Opl3 {
+                    port: 0,
+                    address,
+                    data,
+                } => unsafe {
+                    adlib::write_command_l(*address, *data);
+                },
+                OplCommand::Opl3 {
+                    port: 1,
+                    address,
+                    data,
+                } => unsafe {
+                    adlib::write_command_r(*address, *data);
+                },
+                OplCommand::Opl2 { address, data }
+                | OplCommand::Opl3 {
+                    port: _,
+                    address,
+                    data,
+                } => unsafe {
+                    adlib::write_command(*address, *data);
+                },
+                OplCommand::Wait { samples } => {
+                    self.timer = samples_to_ms(*samples as u32);
+                }
+                OplCommand::SmallWait { n } => {
+                    self.timer = samples_to_ms(*n as u32 + 1);
+                }
+                OplCommand::Wait735 => {
+                    self.timer = samples_to_ms(735);
+                }
+                OplCommand::Wait882 => {
+                    self.timer = samples_to_ms(882);
+                }
+            }
+            self.cmd_index += 1;
+        }
+        if self.cmd_index >= self.vgm.opl_commands.len() {
+            PlaybackState::Stopped
+        } else {
+            PlaybackState::Playing
+        }
+    }
+}
+
+pub fn play_async(vgm: &OplVgm) {
+    let mut reactor = AdlibPlayReactor::new(vgm);
+
+    println!("Now playing... (Press Esc to stop)");
+
+    let mut shutdown = false;
+    while !shutdown {
+        // use PIT timer
+        let delta_ms = 30;
+        let state = reactor.poll(delta_ms);
+        if state == PlaybackState::Stopped {
+            break;
+        }
+
+        unsafe {
+            delay(delta_ms - 1);
+        }
+
+        let key = dos_x::key::get_keypress();
+        if key == 0x01 {
+            shutdown = true;
+        }
+    }
+}
+
+fn adlib_voice_off() {
     // turn off voice for every channel
     unsafe {
         for i in 0..9 {
@@ -255,7 +364,6 @@ fn run_player(filename: &CStr) {
             delay(1);
         }
     }
-    reset_adlib();
 }
 
 /// wait a number of cycles
