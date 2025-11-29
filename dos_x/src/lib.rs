@@ -49,6 +49,7 @@ extern crate alloc;
 
 pub mod adlib;
 pub mod allocator;
+pub mod clock;
 pub mod fs;
 pub mod io;
 pub mod key;

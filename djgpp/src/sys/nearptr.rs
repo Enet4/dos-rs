@@ -22,9 +22,9 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! djgpp_conventional_base {
     () => {
-        (-__djgpp_base_address) as *const u8 as *const _
+        (-$crate::sys::nearptr::__djgpp_base_address) as *mut u8 as *mut _
     };
     ($addr: expr) => {
-        $addr + djgpp_conventional_base!()
+        ($crate::sys::nearptr::__djgpp_base_address as usize + $addr as usize) as *mut u8 as *mut _
     };
 }
