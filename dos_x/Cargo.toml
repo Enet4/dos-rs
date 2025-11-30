@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 djgpp = { version = "0.1.0", path = "../djgpp" }
+smallvec = "1.15.1"
