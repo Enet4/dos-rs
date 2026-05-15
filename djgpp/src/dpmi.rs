@@ -165,6 +165,16 @@ unsafe extern "C" {
     pub fn __dpmi_get_segment_limit(_selector: c_int) -> u32;    /* LSL instruction  */
     pub fn __dpmi_set_segment_limit(_selector: c_int, _limit: u32) -> c_int;	/* DPMI 0.9 AX=0008 */
 
+    pub fn __dpmi_get_descriptor_access_rights(_selector: c_int) -> c_int;	/* LAR instruction  */
+    pub fn __dpmi_set_descriptor_access_rights(_selector: c_int, _rights: c_int) -> c_int;	/* DPMI 0.9 AX=0009 */
+    pub fn __dpmi_create_alias_descriptor(_selector: c_int) -> c_int;   /* DPMI 0.9 AX=000a */
+    pub fn __dpmi_get_descriptor(_selector: c_int, _buffer: *mut c_void) -> c_int;	/* DPMI 0.9 AX=000b */
+    pub fn __dpmi_set_descriptor(_selector: c_int, _buffer: *mut c_void) -> c_int;	/* DPMI 0.9 AX=000c */
+    pub fn __dpmi_allocate_specific_ldt_descriptor(_selector: c_int) -> c_int;	/* DPMI 0.9 AX=000d */
+
+    pub fn __dpmi_get_multiple_descriptors(_count: c_int, _buffer: *mut c_void) -> c_int;  /* DPMI 1.0 AX=000e */
+    pub fn __dpmi_set_multiple_descriptors(_count: c_int, _buffer: *mut c_void) -> c_int;  /* DPMI 1.0 AX=000f */
+
     pub fn __dpmi_allocate_dos_memory(size: u32, segment: *mut u16) -> c_int;   /* DPMI 0.9 AX=0100 */
     pub fn __dpmi_free_dos_memory(segment: u16) -> c_int;   /* DPMI 0.9 AX=0101 */
     pub fn __dpmi_resize_dos_memory(_selector: c_int, _newpara: c_int, _ret_max: *mut c_int) -> c_int;	/* DPMI 0.9 AX=0102 */
@@ -194,8 +204,21 @@ unsafe extern "C" {
         _address: *mut __dpmi_paddr,
     ) -> c_int; /* DPMI 0.9 AX=0205 */
 
+    pub fn __dpmi_get_extended_exception_handler_vector_pm(_vector: c_int, _address: *mut __dpmi_paddr) -> c_int;	/* DPMI 1.0 AX=0210 */
+    pub fn __dpmi_get_extended_exception_handler_vector_rm(_vector: c_int, _address: *mut __dpmi_paddr) -> c_int;	/* DPMI 1.0 AX=0211 */
+    pub fn __dpmi_set_extended_exception_handler_vector_pm(_vector: c_int, _address: *mut __dpmi_paddr) -> c_int;	/* DPMI 1.0 AX=0212 */
+    pub fn __dpmi_set_extended_exception_handler_vector_rm(_vector: c_int, _address: *mut __dpmi_paddr) -> c_int;	/* DPMI 1.0 AX=0213 */
+
     pub fn __dpmi_simulate_real_mode_interrupt(_vector: c_int, _regs: *mut __dpmi_regs) -> c_int;	/* DPMI 0.9 AX=0300 */
     pub fn __dpmi_int(int: u8, registers: *mut __dpmi_regs) -> c_int;   /* like above, but sets ss sp fl */	/* DPMI 0.9 AX=0300 */
+
+    pub fn __dpmi_simulate_real_mode_procedure_retf(_regs: *mut __dpmi_regs) -> c_int;	/* DPMI 0.9 AX=0301 */
+    pub fn __dpmi_simulate_real_mode_procedure_retf_stack(_regs: *mut __dpmi_regs, stack_words_to_copy: c_int, stack_data: *const c_void) -> c_int; /* DPMI 0.9 AX=0301 */
+    pub fn __dpmi_simulate_real_mode_procedure_iret(_regs: *mut __dpmi_regs) -> c_int;	/* DPMI 0.9 AX=0302 */
+    pub fn __dpmi_allocate_real_mode_callback(_handler: *const extern "C" fn() -> (), _regs: *mut __dpmi_regs, _ret: *mut __dpmi_raddr) -> c_int; /* DPMI 0.9 AX=0303 */
+    pub fn __dpmi_free_real_mode_callback(_addr: *mut __dpmi_raddr) -> c_int;   /* DPMI 0.9 AX=0304 */
+    pub fn __dpmi_get_state_save_restore_addr(_rm: *mut __dpmi_raddr, _pm: *mut __dpmi_paddr) -> c_int;	/* DPMI 0.9 AX=0305 */
+    pub fn __dpmi_get_raw_mode_switch_addr(_rm: *mut __dpmi_raddr, _pm: *mut __dpmi_paddr) -> c_int;	/* DPMI 0.9 AX=0306 */
 
     pub fn __dpmi_get_version(_ret: *mut __dpmi_version_ret) -> c_int;   /* DPMI 0.9 AX=0400 */
 
@@ -208,12 +231,30 @@ unsafe extern "C" {
 
     pub fn __dpmi_allocate_linear_memory(_info: *mut __dpmi_meminfo, _commit: c_int) -> c_int;	/* DPMI 1.0 AX=0504 */
     pub fn __dpmi_resize_linear_memory(_info: *mut __dpmi_meminfo, _commit: c_int) -> c_int;	/* DPMI 1.0 AX=0505 */
+    pub fn __dpmi_get_page_attributes(_info: *mut __dpmi_meminfo, _buffer: *mut i16) -> c_int;	/* DPMI 1.0 AX=0506 */
+    pub fn __dpmi_set_page_attributes(_info: *mut __dpmi_meminfo, _buffer: *mut i16) -> c_int;	/* DPMI 1.0 AX=0507 */
+    pub fn __dpmi_map_device_in_memory_block(_info: *mut __dpmi_meminfo, _physaddr: u32) -> c_int;	/* DPMI 1.0 AX=0508 */
+    pub fn __dpmi_map_conventional_memory_in_memory_block(_info: *mut __dpmi_meminfo, _physaddr: u32) -> c_int; /* DPMI 1.0 AX=0509 */
+    pub fn __dpmi_get_memory_block_size_and_base(_info: *mut __dpmi_meminfo) -> c_int;  /* DPMI 1.0 AX=050a */
+    pub fn __dpmi_get_memory_information(_buffer: *mut __dpmi_memory_info) -> c_int;	/* DPMI 1.0 AX=050b */
+
+    pub fn __dpmi_lock_linear_region(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0600 */
+    pub fn __dpmi_unlock_linear_region(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0601 */
+    pub fn __dpmi_mark_real_mode_region_as_pageable(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0602 */
+    pub fn __dpmi_relock_real_mode_region(_info: *mut __dpmi_meminfo) -> c_int; /* DPMI 0.9 AX=0603 */
+    pub fn __dpmi_get_page_size(_size: *mut u32) -> c_int;	/* DPMI 0.9 AX=0604 */
+
+    pub fn __dpmi_mark_page_as_demand_paging_candidate(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0702 */
+    pub fn __dpmi_discard_page_contents(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0703 */
+
+    pub fn __dpmi_physical_address_mapping(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0800 */
+    pub fn __dpmi_free_physical_address_mapping(_info: *mut __dpmi_meminfo) -> c_int;	/* DPMI 0.9 AX=0801 */
 
     /* These next four functions return the old state */
     pub fn __dpmi_get_and_disable_virtual_interrupt_state() -> c_int;	/* DPMI 0.9 AX=0900 */
     pub fn __dpmi_get_and_enable_virtual_interrupt_state() -> c_int;	/* DPMI 0.9 AX=0901 */
     pub fn __dpmi_get_and_set_virtual_interrupt_state(_old_state: c_int) -> c_int;	/* DPMI 0.9 AH=09   */
-    pub fn __dpmi_get_virtual_interrupt_state() -> c_int;   /* DPMI 0.9 AX=0902 */
+    pub fn __dpmi_get_virtual_interrupt_state() -> c_int;	/* DPMI 0.9 AX=0902 */
 
     pub fn __dpmi_get_coprocessor_status() -> c_int;	/* DPMI 1.0 AX=0e00 */
     pub fn __dpmi_set_coprocessor_emulation(_flags: c_int) -> c_int;	/* DPMI 1.0 AX=0e01 */
