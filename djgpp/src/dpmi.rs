@@ -354,7 +354,28 @@ unsafe extern "C" {
 
     /********** HELPER FUNCTIONS **********/
 
+    /** sets up wrapper that calls function in pm_offset, chaining to old
+	 * handler when it returns */
     pub fn _go32_dpmi_chain_protected_mode_interrupt_vector(vector: c_int, info: *mut _go32_dpmi_seginfo) -> c_int;
+
+    /* These generate assember IRET-style wrappers for functions and set up stack */
+
+    /** Put function ptr in pm_offset, call, returns wrapper entry in pm_offset. */
+    pub fn _go32_dpmi_allocate_iret_wrapper(info: *mut _go32_dpmi_seginfo) -> c_int;
+	/** assumes pm_offset points to wrapper, frees it */
+    pub fn _go32_dpmi_free_iret_wrapper(info: *mut _go32_dpmi_seginfo) -> c_int;
+
+    /* RMCB functions, automatically restructure the real-mode stack for the 
+     * proper return type and set up correct PM stack.  The callback
+     * (info->pm_offset) is called as (*pmcb)(_go32_dpmi_registers *regs); */
+	/** points callback at pm_offset, returns seg:ofs of callback addr
+	 * in rm_segment:rm_offset.  Do not change any fields until freed.
+	 * Interface is added to simulate far return */
+    pub fn _go32_dpmi_allocate_real_mode_callback_retf(info: *mut _go32_dpmi_seginfo, regs: *mut _go32_dpmi_registers) -> c_int;
+    /* same, but simulates iret */
+    pub fn _go32_dpmi_allocate_real_mode_callback_iret(info: *mut _go32_dpmi_seginfo, regs: *mut _go32_dpmi_registers) -> c_int;
+	/** frees callback */
+    pub fn _go32_dpmi_free_real_mode_callback(info: *mut _go32_dpmi_seginfo) -> c_int;
 
     /* locks memory from a specified offset within the code/data selector */
     pub fn _go32_dpmi_lock_code(_lockaddr: *mut c_void, _locksize: u32) -> c_int;
