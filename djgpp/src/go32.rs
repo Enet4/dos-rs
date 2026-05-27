@@ -1,5 +1,33 @@
 //! GO32 functions (as declared in `go32.h`).
 
+
+unsafe extern "C" {
+    pub fn _my_cs() -> u16;
+    pub fn _my_ds() -> u16;
+    pub fn _my_ss() -> u16;
+}
+
+#[inline(always)]
+pub unsafe fn _go32_my_cs() -> u16 {
+    unsafe {
+        _my_cs()
+    }
+}
+
+#[inline(always)]
+pub unsafe fn _go32_my_ds() -> u16 {
+    unsafe {
+        _my_ds()
+    }
+}
+
+#[inline(always)]
+pub unsafe fn _go32_my_ss() -> u16 {
+    unsafe {
+        _my_ss()
+    }
+}
+
 /* These lengths are in bytes, optimized for speed */
 
 unsafe extern "C" {
